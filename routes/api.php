@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +13,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::post('cadastrar-se', [\App\Http\Controllers\Api\Auth\AuthController::class, 'registrar']);
+Route::middleware([])->group(function () {
+    ###################################################################################################################
+    # ROTAS AUTH
+
+    Route::get('usuario-autenticado', [\App\Http\Controllers\Api\Auth\AuthController::class, 'usuarioAutenticado']);
+
+    ###################################################################################################################
+    # ROTAS INVESTIMENTO
+
+    Route::get('investimentos/buscar-info-ativo', [\App\Http\Controllers\Api\Investimento\InvestimentoController::class, 'buscarInfoAtivo']);
+    Route::apiResource('investimentos', \App\Http\Controllers\Api\Investimento\InvestimentoController::class);
 });

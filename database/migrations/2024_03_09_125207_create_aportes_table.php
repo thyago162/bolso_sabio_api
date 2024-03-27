@@ -14,8 +14,10 @@ return new class extends Migration
         Schema::create('aportes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('investimento_id')->references('id')->on('categorias');
-            $table->float('valor_aportado', 10);
-            $table->integer('quantidade');
+            $table->float('total_compras', 10);
+            $table->float('total_vendas', 10);
+            $table->integer('qnt_compras');
+            $table->integer('qnt_vendas');
             $table->float('valor_ativo', 10);
             $table->foreignId('user_id')->references('id')->on('users');
             $table->timestamps();

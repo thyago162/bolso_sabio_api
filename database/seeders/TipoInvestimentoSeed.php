@@ -19,9 +19,9 @@ class TipoInvestimentoSeed extends Seeder
         TipoInvestimento::firstOrCreate(['nome' => 'Debentures', 'tipo_renda' => 'Fixa', 'alias' => '']);
         TipoInvestimento::firstOrCreate(['nome' => 'CRI e CRA', 'tipo_renda' => 'Fixa', 'alias' => '']);
         TipoInvestimento::firstOrCreate(['nome' => 'Letra Financeira', 'tipo_renda' => 'Fixa', 'alias' => '']);
-        TipoInvestimento::firstOrCreate(['nome' => 'Ações', 'tipo_renda' => 'Variável', 'alias' => 'stock']);
-        TipoInvestimento::firstOrCreate(['nome' => 'BDRs', 'tipo_renda' => 'Variável', 'alias' => 'dbr']);
-        TipoInvestimento::firstOrCreate(['nome' => 'Fundos Imobiliários', 'tipo_renda' => 'Variável', 'alias' => 'fii']);
-        TipoInvestimento::firstOrCreate(['nome' => 'ETFs', 'tipo_renda' => 'Variável', 'alias' => 'etf']);
+        TipoInvestimento::firstOrCreate(['nome' => 'Ação', 'tipo_renda' => 'Variável', 'alias' => 'stock']);
+        TipoInvestimento::firstOrCreate(['nome' => 'BDR', 'tipo_renda' => 'Variável', 'alias' => 'dbr']);
+        TipoInvestimento::firstOrCreate(['nome' => 'FII', 'tipo_renda' => 'Variável', 'alias' => 'fii']);
+        TipoInvestimento::firstOrCreate(['nome' => 'ETF', 'tipo_renda' => 'Variável', 'alias' => 'etf']);
     }
 }
