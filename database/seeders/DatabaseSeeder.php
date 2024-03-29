@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             PerfilSeeder::class,
             TipoInvestimentoSeed::class,
             UserSeed::class,
+            CategoriaSeeder::class,
         ]);
     }
 }

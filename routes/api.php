@@ -25,4 +25,5 @@ Route::middleware([])->group(function () {
 
     Route::get('investimentos/buscar-info-ativo', [\App\Http\Controllers\Api\Investimento\InvestimentoController::class, 'buscarInfoAtivo']);
     Route::apiResource('investimentos', \App\Http\Controllers\Api\Investimento\InvestimentoController::class);
+    Route::apiResource('resumo-negociacao', \App\Http\Controllers\Api\ResumoNegociacao\ResumoNegociacaoController::class);
 });

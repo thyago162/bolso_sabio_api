@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
-use App\Casts\ValorInvestido;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+
 
 class Investimento extends Model
 {
@@ -24,10 +26,6 @@ class Investimento extends Model
         'vencimento'
     ];
 
-    protected $casts = [
-        'valor_investido' => ValorInvestido::class
-    ];
-
     ################################################################################################################
     # RELATIONSHIPS
 
@@ -44,5 +42,27 @@ class Investimento extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function administradoraInvestimento()
+    {
+        return $this->hasOne(AdministradoraInvestimento::class);
+    }
+
+    ###############################################################################################################
+    # CAST E MUTATORS
+    ################################################################################################################
+    protected function valorBruto(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => str_replace('.', ',', $value),
+        );
+    }
+
+    protected function vencimento(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => $value ? Carbon::parse($value)->format('d/m/Y') : ''
+        );
     }
 }
