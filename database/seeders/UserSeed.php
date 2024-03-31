@@ -15,10 +15,10 @@ class UserSeed extends Seeder
     {
         User::create([
             'nome_completo' => 'Administrador',
-            'email' => 'thyago@email.com',
-            'cpf' => '05928183496',
+            'email' => 'admin@bolsosabio.com',
+            'cpf' => '000000000000',
             'ddd' => '83',
-            'telefone' => '999310936',
+            'telefone' => '999310935',
             'password' => bcrypt('l1nux222')
         ]);
     }

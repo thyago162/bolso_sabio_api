@@ -14,13 +14,15 @@ return new class extends Migration
         Schema::create('resumo_negociacoes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('investimento_id')->references('id')->on('investimentos');
-            $table->float('total_compras', 10);
-            $table->float('total_vendas', 10);
-            $table->integer('qnt_compras');
-            $table->integer('qnt_vendas');
+            $table->float('total_comprado', 10);
+            $table->float('total_vendido', 10);
+            $table->integer('qnt_cotas_comprada');
+            $table->integer('qnt_cotas_vendida');
             $table->float('valor_ativo', 10);
             $table->foreignId('user_id')->references('id')->on('users');
-            $table->date('dt_negociacao');
+            $table->date('data_negociacao');
+            $table->integer('mes');
+            $table->integer('ano');
             $table->timestamps();
         });
     }

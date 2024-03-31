@@ -43,46 +43,9 @@ class InvestimentoController extends Controller
                 $this->investimento_service->store($request), 201
             );
         } catch (\Exception $exception) {
-            Log::error($exception);
+                Log::error($exception);
 
-            return ErroService::report($exception);
-        }
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
-
-    public function buscarInfoAtivo(Request $request)
-    {
-        try {
-            return response()->json(
-                $this->investimento_service->buscarAtivoPorNome($request->nome_ativo)
-            );
-        } catch (\Exception $exception) {
-            Log::error($exception);
-
-            return ErroService::report($exception);
+                return ErroService::report($exception);
         }
     }
 }

@@ -12,13 +12,15 @@ class ResumoNegociacao extends Model
     protected $table = 'resumo_negociacoes';
     protected $fillable = [
         'investimento_id',
-        'total_compras',
-        'total_vendas',
-        'qnt_compras',
-        'qnt_vendas',
+        'total_comprado',
+        'total_vendido',
+        'qnt_cotas_comprada',
+        'qnt_cotas_vendida',
         'valor_ativo',
         'user_id',
-        'data_negociacao'
+        'data_negociacao',
+        'mes',
+        'ano'
     ];
 
     ##############################################################################################################

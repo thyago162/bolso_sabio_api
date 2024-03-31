@@ -32,7 +32,7 @@ class InvestimentoService
         $this->api_service = new ApiService();
     }
 
-    public function buscarAtivoPorNome(string $nome_ativo, $tipo_investimento_id): array
+    public function buscarAtivoPorNome(string $nome_ativo, $tipo_investimento_id = null): array
     {
         $response = $this->api_service->getAtivos([$nome_ativo]);
         if ($response->status() >= 400) {
@@ -41,12 +41,24 @@ class InvestimentoService
 
         $payload = $response->json();
         if (isset($payload['results'][strtoupper($nome_ativo)]['error'])) {
-            $categoria = $this->categoria_service->getPorNome('Título');
-        } else {
-            $categoria = $this->categoria_service->store($payload['results'][strtoupper($nome_ativo)]['sector'], $tipo_investimento_id);
+            return [
+                'categoria_id' => null,
+                'tipo_investimento_id' => $tipo_investimento_id,
+                'ativo' => []
+            ];
         }
 
+        if (!$tipo_investimento_id) {
+            $tipo_investimento = $this->tipo_investimento_service->getPorAlias($payload['results'][strtoupper($nome_ativo)]['kind']);
+            $tipo_investimento_id = $tipo_investimento->id;
+        }
+
+        $categoria = isset($payload['results'][strtoupper($nome_ativo)]['error']) ?
+            $this->categoria_service->getPorNome('Título') :
+            $this->categoria_service->store($payload['results'][strtoupper($nome_ativo)]['sector'], $tipo_investimento_id);
+
         return [
+            'tipo_investimento_id' => $tipo_investimento_id,
             'categoria_id' => $categoria->id,
             'ativo' => $payload['results'][strtoupper($nome_ativo)]
         ];
@@ -92,6 +104,7 @@ class InvestimentoService
 
         return Investimento::where('user_id', 1)->get();
     }
+
     private function save($investimento, $data, $tipo_investimento_id)
     {
         return Investimento::updateOrCreate(['descricao' => $investimento['descricao']], [
@@ -134,5 +147,25 @@ class InvestimentoService
         return Investimento::where('user_id', 1)
             ->where('descricao', $descricao)
             ->first();
+    }
+
+    /**
+     * @throws PersonalException
+     */
+    public function cadastrarAtivoVendido($nome_ativo)
+    {
+        $data = $this->buscarAtivoPorNome(strtoupper($nome_ativo));
+        return Investimento::create([
+            'descricao' => $nome_ativo,
+            'categoria_id' => empty($data['categoria_id']) ? $data['categoria_id'] : 1,
+            'user_id' => 1,
+            'tipo_investimento_id' => empty($data) ? $data['tipo_investimento_id'] : 7,
+            'quantidade' => 0,
+            'valor_unitario' => isset($data['price']) ? $this->formatarValor($data['price']) : 0,
+            'valor_aplicado' => 0,
+            'valor_bruto' => 0,
+            'valor_liquido' => 0,
+            'deleted_at' => now()
+        ]);
     }
 }

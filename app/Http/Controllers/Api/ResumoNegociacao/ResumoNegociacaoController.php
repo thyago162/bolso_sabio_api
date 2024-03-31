@@ -71,4 +71,17 @@ class ResumoNegociacaoController extends Controller
     {
         //
     }
+
+    public function buscarAnos()
+    {
+        try {
+            return response()->json(
+                $this->resumo_negociacao_service->buscarAnos(), 201
+            );
+        } catch (\Exception $exception) {
+            Log::error($exception);
+
+            return ErroService::report($exception);
+        }
+    }
 }

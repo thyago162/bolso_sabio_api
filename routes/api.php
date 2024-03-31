@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('cadastrar-se', [\App\Http\Controllers\Api\Auth\AuthController::class, 'registrar']);
+Route::post('cadastrar', [\App\Http\Controllers\Api\Auth\AuthController::class, 'registrar']);
 Route::middleware([])->group(function () {
     ###################################################################################################################
     # ROTAS AUTH
@@ -23,7 +23,18 @@ Route::middleware([])->group(function () {
     ###################################################################################################################
     # ROTAS INVESTIMENTO
 
-    Route::get('investimentos/buscar-info-ativo', [\App\Http\Controllers\Api\Investimento\InvestimentoController::class, 'buscarInfoAtivo']);
+    Route::get('investimentos/buscar-info-ativo', [
+            \App\Http\Controllers\Api\Investimento\InvestimentoController::class,
+            'buscarInfoAtivo']
+    );
     Route::apiResource('investimentos', \App\Http\Controllers\Api\Investimento\InvestimentoController::class);
+
+    ####################################################################################################################
+    # RESUMO NEGOCIAÇÃO
+    Route::get('resumo-negociacao/anos', [\App\Http\Controllers\Api\ResumoNegociacao\ResumoNegociacaoController::class, 'buscarAnos']);
     Route::apiResource('resumo-negociacao', \App\Http\Controllers\Api\ResumoNegociacao\ResumoNegociacaoController::class);
+
+    ###################################################################################################################
+    # ADMINISTRADORA
+    Route::apiResource('administradora', \App\Http\Controllers\Api\Administradora\AdministradoraController::class);
 });

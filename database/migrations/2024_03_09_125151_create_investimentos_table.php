@@ -22,9 +22,10 @@ return new class extends Migration
             $table->double('valor_unitario', 10, 2)->default(0);
             $table->date('vencimento')->nullable();
             $table->foreignId('tipo_investimento_id')->references('id')->on('tipo_investimentos');
-            $table->foreignId('categoria_id')->references('id')->on('categorias');
+            $table->unsignedBigInteger('categoria_id')->nullable();
             $table->foreignId('user_id')->references('id')->on('users');
 
+            $table->softDeletes();
             $table->timestamps();
         });
     }

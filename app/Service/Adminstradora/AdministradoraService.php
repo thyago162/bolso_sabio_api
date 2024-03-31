@@ -3,6 +3,7 @@
 namespace App\Service\Adminstradora;
 
 use App\Models\Administradora;
+use App\Models\AdministradoraInvestimento;
 
 class AdministradoraService
 {
@@ -17,5 +18,12 @@ class AdministradoraService
                 'logo' => isset($data['logo']) ? $data['logo']['small'] : null
             ]
         );
+    }
+
+    public function show($id)
+    {
+        return AdministradoraInvestimento::with('administradora')
+            ->where('investimento_id', $id)
+            ->firstOrFail();
     }
 }
