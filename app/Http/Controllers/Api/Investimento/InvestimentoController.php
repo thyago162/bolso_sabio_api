@@ -40,12 +40,51 @@ class InvestimentoController extends Controller
     {
         try {
             return response()->json(
-                $this->investimento_service->store($request), 201
+                $this->investimento_service->salvar($request), 201
             );
         } catch (\Exception $exception) {
                 Log::error($exception);
 
                 return ErroService::report($exception);
+        }
+    }
+
+    public function importar(Request $request)
+    {
+        try {
+            return response()->json(
+                $this->investimento_service->importar($request), 201
+            );
+        } catch (\Exception $exception) {
+            Log::error($exception);
+
+            return ErroService::report($exception);
+        }
+    }
+
+    public function buscarAtivo(Request $request)
+    {
+        try {
+            return response()->json(
+                $this->investimento_service->buscarAtivoPorNome(strtoupper($request->descricao))
+            );
+        } catch (\Exception $exception) {
+            Log::error($exception);
+
+            return ErroService::report($exception);
+        }
+    }
+
+    public function show($id)
+    {
+        try {
+            return response()->json(
+                $this->investimento_service->show($id)
+            );
+        } catch (\Exception $exception) {
+            Log::error($exception);
+
+            return ErroService::report($exception);
         }
     }
 }

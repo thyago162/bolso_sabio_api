@@ -67,16 +67,33 @@ class InvestimentoService
     public function index()
     {
         $investimento = Investimento::with(['categoria', 'tipoInvestimento'])
-            ->where('user_id', 1);
+            ->where('user_id', auth()->id());
 
         if (request('tipo_exibicao') == 'card') {
             return $investimento->get();
         }
 
-        return $investimento->paginate(10);
+        return $investimento->orderBy('tipo_investimento_id')->paginate(request('per_page'));
     }
 
-    public function store($request)
+    public function salvar($data)
+    {
+        return Investimento::create([
+            'descricao' => $data['descricao'],
+            'categoria_id' => $data['categoria_id'],
+            'user_id' => auth()->id(),
+            'tipo_investimento_id' => $data['tipo_investimento_id'],
+            'quantidade' => $data['quantidade'],
+            'valor_unitario' => $data['preco'],
+            'valor_aplicado' => $data['valor_aplicado'],
+            'valor_bruto' => $data['valor_bruto'],
+            'valor_liquido' => $data['valor_liquido'],
+            'taxa_negociada' => $data['taxa_negociada'],
+            'vencimento' => $data['vencimento']
+        ]);
+    }
+
+    public function importar($request)
     {
         $investimentos = $this->csv_service->montarArray($this->csv_service->csvToArray($request->file('investimentos')));
         foreach ($investimentos as $investimento) {
@@ -107,19 +124,20 @@ class InvestimentoService
 
     private function save($investimento, $data, $tipo_investimento_id)
     {
-        return Investimento::updateOrCreate(['descricao' => $investimento['descricao']], [
-            'descricao' => $investimento['descricao'],
-            'categoria_id' => $data['categoria_id'],
-            'user_id' => 1,
-            'tipo_investimento_id' => $tipo_investimento_id,
-            'quantidade' => $investimento['quantidade'] ? $this->formatarValor($investimento['quantidade']) : 0,
-            'valor_unitario' => isset($data['price']) ? $this->formatarValor($data['price']) : 0,
-            'valor_aplicado' => $investimento['valor_bruto'] ? $this->formatarValor($investimento['valor_bruto']) : 0,
-            'valor_bruto' => $investimento['valor_bruto'] ? $this->formatarValor($investimento['valor_bruto']) : 0,
-            'valor_liquido' => $investimento['valor_liquido'] ? $this->formatarValor($investimento['valor_liquido']) : 0,
-            'taxa_negociada' => $investimento['taxa_negociada'],
-            'vencimento' => $this->formatarData($investimento['vencimento'])
-        ]);
+        return Investimento::create(
+            [
+                'descricao' => $investimento['descricao'],
+                'categoria_id' => $data['categoria_id'],
+                'user_id' => auth()->id(),
+                'tipo_investimento_id' => $tipo_investimento_id,
+                'quantidade' => $investimento['quantidade'] ? $this->formatarValor($investimento['quantidade']) : 0,
+                'valor_unitario' => isset($data['price']) ? $this->formatarValor($data['price']) : 0,
+                'valor_aplicado' => $investimento['valor_aplicado'] ? $this->formatarValor($investimento['valor_aplicado']) : 0,
+                'valor_bruto' => $investimento['valor_bruto'] ? $this->formatarValor($investimento['valor_bruto']) : 0,
+                'valor_liquido' => $investimento['valor_liquido'] ? $this->formatarValor($investimento['valor_liquido']) : 0,
+                'taxa_negociada' => $investimento['taxa_negociada'],
+                'vencimento' => $this->formatarData($investimento['vencimento'])
+            ]);
     }
 
     private function formatarValor($valor)
@@ -144,7 +162,7 @@ class InvestimentoService
 
     public function getPorDescricao($descricao)
     {
-        return Investimento::where('user_id', 1)
+        return Investimento::where('user_id', auth()->id())
             ->where('descricao', $descricao)
             ->first();
     }
@@ -155,7 +173,7 @@ class InvestimentoService
     public function cadastrarAtivoVendido($nome_ativo)
     {
         $data = $this->buscarAtivoPorNome(strtoupper($nome_ativo));
-        return Investimento::create([
+        return Investimento::updateOrCreate(['descricao' => $nome_ativo], [
             'descricao' => $nome_ativo,
             'categoria_id' => empty($data['categoria_id']) ? $data['categoria_id'] : 1,
             'user_id' => 1,
@@ -167,5 +185,11 @@ class InvestimentoService
             'valor_liquido' => 0,
             'deleted_at' => now()
         ]);
+    }
+
+    public function show($id)
+    {
+        return Investimento::with(['tipoInvestimento', 'categoria', 'administradoraInvestimento.administradora'])
+            ->findOrFail($id);
     }
 }

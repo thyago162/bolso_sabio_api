@@ -19,4 +19,10 @@ class CategoriaService
         return Categoria::where('nome', $nome)
             ->firstOrFail();
     }
+
+    public function getByTipoInvestimentoId($tipo_investimento_id)
+    {
+        return Categoria::where('tipo_investimento_id', $tipo_investimento_id)
+            ->firstOrFail();
+    }
 }

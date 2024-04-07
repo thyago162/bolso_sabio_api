@@ -18,4 +18,10 @@ class TipoInvestimentoService
             '%' . $nome . '%'
         ])->firstOrFail();
     }
+
+    public function index()
+    {
+        return TipoInvestimento::where('tipo_renda', request('tipo_renda'))
+            ->get();
+    }
 }

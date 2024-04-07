@@ -2,11 +2,9 @@
 
 namespace App\Service\ResumoNegociacao;
 
-use App\Models\Investimento;
 use App\Models\ResumoNegociacao;
 use App\Service\Csv\CsvService;
 use App\Service\Investimento\InvestimentoService;
-use Carbon\Carbon;
 
 class ResumoNegociacaoService
 {
@@ -31,7 +29,7 @@ class ResumoNegociacaoService
         $data = [];
 
         $resumo_negociacoes = ResumoNegociacao::with('investimento.administradoraInvestimento.administradora')
-            ->where('user_id', 1)
+            ->where('user_id', auth()->id())
             ->where('ano', request('ano'))
             ->orWhere('ano', request('ano') - 1)
             ->get()->unique('investimento_id');
@@ -76,12 +74,25 @@ class ResumoNegociacaoService
         }
 
         return $data;
-
-
-        return $resumo_negociacoes;
     }
 
     public function store($request)
+    {
+        return ResumoNegociacao::create([
+            'investimento_id' => $request->investimento_id,
+            'total_comprado' => $request->total_comprado,
+            'total_vendido' => $request->total_vendido,
+            'qnt_cotas_comprada' => $request->qnt_cotas_comprada,
+            'qnt_cotas_vendida' => $request->qnt_cotas_vendida,
+            'valor_ativo' => $request->valor_ativo,
+            'data_negociacao' => $request->data_negociacao,
+            'user_id' => auth()->id(),
+            'mes' => now()->month,
+            'ano' => now()->year
+        ]);
+    }
+
+    public function importar($request)
     {
         $resumos_negociacao = $this->csv_service->montarArray($this->csv_service->csvToArray($request->file('resumo_negociacao')));
         foreach ($resumos_negociacao as $resumo_negociacao) {
@@ -99,13 +110,13 @@ class ResumoNegociacaoService
                 'qnt_cotas_vendida' => $resumo_negociacao['quantidade_venda'],
                 'valor_ativo' => str_replace(',', '.', $resumo_negociacao['preco']),
                 'data_negociacao' => $this->formatarData($resumo_negociacao['dt._negociacao']),
-                'user_id' => 1,
+                'user_id' => auth()->id(),
                 'mes' => $this->getMesOuAno($resumo_negociacao['dt._negociacao'], 'mes'),
                 'ano' => $this->getMesOuAno($resumo_negociacao['dt._negociacao'], 'ano')
             ]);
         }
 
-        return ResumoNegociacao::where('user_id', 1)->get();
+        return ResumoNegociacao::where('user_id', auth()->id())->get();
     }
 
     private function formatarData($data)
@@ -133,7 +144,7 @@ class ResumoNegociacaoService
     public function buscarAnos()
     {
         $array_anos = [];
-        $anos = ResumoNegociacao::where('user_id', 1)
+        $anos = ResumoNegociacao::where('user_id', auth()->id())
             ->select('ano')
             ->orderBy('ano')
             ->get()

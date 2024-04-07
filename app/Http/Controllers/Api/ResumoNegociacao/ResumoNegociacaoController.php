@@ -48,28 +48,17 @@ class ResumoNegociacaoController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function importar(Request $request)
     {
-        //
-    }
+        try {
+            return response()->json(
+                $this->resumo_negociacao_service->importar($request), 201
+            );
+        } catch (\Exception $exception) {
+            Log::error($exception);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+            return ErroService::report($exception);
+        }
     }
 
     public function buscarAnos()

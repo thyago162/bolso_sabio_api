@@ -10,15 +10,15 @@ class ErroService
     public static function report($exception)
     {
         $erro = [
-            'mensagem' => MensagemRetornoEnum::ERROR->value,
+            'message' => MensagemRetornoEnum::ERROR->value,
             'codigo' => 500
         ];
 
         if ($exception instanceof ModelNotFoundException) {
-            $erro['mensagem'] = 'Recurso não encontrado';
+            $erro['message'] = 'Recurso não encontrado';
             $erro['codigo'] = 404;
         }
 
-        return response()->json(['mensagem' => $erro['mensagem']], $erro['codigo']);
+        return response()->json(['message' => $erro['message']], $erro['codigo']);
     }
 }

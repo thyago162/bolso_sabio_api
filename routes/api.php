@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('cadastrar', [\App\Http\Controllers\Api\Auth\AuthController::class, 'registrar']);
-Route::middleware([])->group(function () {
+Route::middleware(['auth:api'])->group(function () {
     ###################################################################################################################
     # ROTAS AUTH
 
@@ -22,19 +22,33 @@ Route::middleware([])->group(function () {
 
     ###################################################################################################################
     # ROTAS INVESTIMENTO
-
-    Route::get('investimentos/buscar-info-ativo', [
+    Route::get('investimentos/buscar-ativo', [
             \App\Http\Controllers\Api\Investimento\InvestimentoController::class,
-            'buscarInfoAtivo']
+            'buscarAtivo']
     );
+
+    Route::post('investimentos/importar', [\App\Http\Controllers\Api\Investimento\InvestimentoController::class, 'importar']);
     Route::apiResource('investimentos', \App\Http\Controllers\Api\Investimento\InvestimentoController::class);
 
     ####################################################################################################################
     # RESUMO NEGOCIAÇÃO
+    Route::post('resumo-negociacao/importacao', [\App\Http\Controllers\Api\ResumoNegociacao\ResumoNegociacaoController::class, 'importar']);
     Route::get('resumo-negociacao/anos', [\App\Http\Controllers\Api\ResumoNegociacao\ResumoNegociacaoController::class, 'buscarAnos']);
     Route::apiResource('resumo-negociacao', \App\Http\Controllers\Api\ResumoNegociacao\ResumoNegociacaoController::class);
 
     ###################################################################################################################
     # ADMINISTRADORA
     Route::apiResource('administradora', \App\Http\Controllers\Api\Administradora\AdministradoraController::class);
+
+    ###################################################################################################################
+    # CARTEIRA
+    Route::apiResource('carteira', \App\Http\Controllers\Api\Carteira\CarteiraController::class);
+
+    #####################################################################################################################
+    # TIPO INVESTIMENTO
+    Route::apiResource('tipo-investimento', \App\Http\Controllers\Api\TipoInvestimento\TipoInvestimentoControlle::class)->only('index');
+
+    #################################################################################################################
+    # CATEGORIA
+    Route::get('categoria/', [\App\Http\Controllers\Api\Categoria\CategoriaController::class, 'getCategoria']);
 });
