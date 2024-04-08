@@ -32,7 +32,8 @@ Route::middleware(['auth:api'])->group(function () {
 
     ####################################################################################################################
     # RESUMO NEGOCIAÇÃO
-    Route::post('resumo-negociacao/importacao', [\App\Http\Controllers\Api\ResumoNegociacao\ResumoNegociacaoController::class, 'importar']);
+    Route::get('resumo-negociacao/buscar-resumo-negociacao', [\App\Http\Controllers\Api\ResumoNegociacao\ResumoNegociacaoController::class, 'resumoNegociacao']);
+    Route::post('resumo-negociacao/importar', [\App\Http\Controllers\Api\ResumoNegociacao\ResumoNegociacaoController::class, 'importar']);
     Route::get('resumo-negociacao/anos', [\App\Http\Controllers\Api\ResumoNegociacao\ResumoNegociacaoController::class, 'buscarAnos']);
     Route::apiResource('resumo-negociacao', \App\Http\Controllers\Api\ResumoNegociacao\ResumoNegociacaoController::class);
 

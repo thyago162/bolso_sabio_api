@@ -67,6 +67,7 @@ class InvestimentoService
     public function index()
     {
         $investimento = Investimento::with(['categoria', 'tipoInvestimento'])
+            ->tipoInvestimento(request('tipo_investimento_id'))
             ->where('user_id', auth()->id());
 
         if (request('tipo_exibicao') == 'card') {

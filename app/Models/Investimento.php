@@ -66,4 +66,15 @@ class Investimento extends Model
             get: fn ($value) => $value ? Carbon::parse($value)->format('d/m/Y') : ''
         );
     }
+
+    ###################################################################################################################
+    # SCOPE
+    public function scopeTipoInvestimento($query, $tipo_investimento_id)
+    {
+        if ($tipo_investimento_id) {
+            $query->where('tipo_investimento_id', $tipo_investimento_id);
+        }
+
+        return $query;
+    }
 }

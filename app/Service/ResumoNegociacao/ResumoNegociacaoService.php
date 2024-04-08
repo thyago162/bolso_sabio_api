@@ -5,6 +5,7 @@ namespace App\Service\ResumoNegociacao;
 use App\Models\ResumoNegociacao;
 use App\Service\Csv\CsvService;
 use App\Service\Investimento\InvestimentoService;
+use Carbon\Carbon;
 
 class ResumoNegociacaoService
 {
@@ -31,7 +32,6 @@ class ResumoNegociacaoService
         $resumo_negociacoes = ResumoNegociacao::with('investimento.administradoraInvestimento.administradora')
             ->where('user_id', auth()->id())
             ->where('ano', request('ano'))
-            ->orWhere('ano', request('ano') - 1)
             ->get()->unique('investimento_id');
 
         foreach ($resumo_negociacoes as $resumo_negociacao) {
@@ -80,15 +80,15 @@ class ResumoNegociacaoService
     {
         return ResumoNegociacao::create([
             'investimento_id' => $request->investimento_id,
-            'total_comprado' => $request->total_comprado,
-            'total_vendido' => $request->total_vendido,
+            'total_comprado' => $request->qnt_cotas_comprada * $request->valor_ativo,
+            'total_vendido' => $request->qnt_cotas_vendida * $request->valor_ativo,
             'qnt_cotas_comprada' => $request->qnt_cotas_comprada,
             'qnt_cotas_vendida' => $request->qnt_cotas_vendida,
             'valor_ativo' => $request->valor_ativo,
-            'data_negociacao' => $request->data_negociacao,
+            'data_negociacao' => $request->data_negociacao ?? now()->format('Y-m-d'),
             'user_id' => auth()->id(),
-            'mes' => now()->month,
-            'ano' => now()->year
+            'mes' => Carbon::parse($request->data_negociacao)->month,
+            'ano' => Carbon::parse($request->data_negociacao)->year
         ]);
     }
 
@@ -163,5 +163,13 @@ class ResumoNegociacaoService
         $ultima_letra = substr($nome_ativo, -1);
 
         return $ultima_letra === 'F' ? (substr($nome_ativo, 0, -1)) : $ativo;
+    }
+
+    public function buscarResumosNegociacao($investimento_id, $ano)
+    {
+        return ResumoNegociacao::with('investimento')->where('user_id', auth()->id())
+            ->where('investimento_id', $investimento_id)
+            ->where('ano', $ano)
+            ->get();
     }
 }

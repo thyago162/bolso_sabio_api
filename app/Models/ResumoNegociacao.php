@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -29,5 +31,15 @@ class ResumoNegociacao extends Model
     public function investimento()
     {
         return $this->belongsTo(Investimento::class);
+    }
+
+    #################################################################################################################3
+    # GETTERS E MUTATORS
+    ##################################################################################################################
+    protected function dataNegociacao(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => $value ? Carbon::parse($value)->format('d/m/Y') : ''
+        );
     }
 }
