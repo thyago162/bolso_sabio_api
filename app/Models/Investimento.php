@@ -50,6 +50,11 @@ class Investimento extends Model
         return $this->hasOne(AdministradoraInvestimento::class);
     }
 
+    public function resumoNegociacao(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ResumoNegociacao::class);
+    }
+
     ###############################################################################################################
     # CAST E MUTATORS
     ################################################################################################################

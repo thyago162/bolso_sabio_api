@@ -45,5 +45,18 @@ class CarteiraController extends Controller
         }
     }
 
+    public function totalPorAno()
+    {
+        try {
+            return response()->json(
+                $this->carteira_service->getTotalPorAno()
+            );
+        } catch (\Exception $exception) {
+            Log::error($exception);
+
+            return ErroService::report($exception);
+        }
+    }
+
 
 }

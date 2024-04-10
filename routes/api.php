@@ -12,8 +12,6 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-Route::get('carteira/total-por-tipo-investimento', [\App\Http\Controllers\Api\Carteira\CarteiraController::class, 'totalPorTipoInvestimento']);
-
 Route::post('cadastrar', [\App\Http\Controllers\Api\Auth\AuthController::class, 'registrar']);
 Route::middleware(['auth:api'])->group(function () {
     ###################################################################################################################
@@ -54,4 +52,6 @@ Route::middleware(['auth:api'])->group(function () {
     #################################################################################################################
     # CATEGORIA
     Route::get('categoria/', [\App\Http\Controllers\Api\Categoria\CategoriaController::class, 'getCategoria']);
+    Route::get('carteira/total-por-ano', [\App\Http\Controllers\Api\Carteira\CarteiraController::class, 'totalPorAno']);
+    Route::get('carteira/total-por-tipo-investimento', [\App\Http\Controllers\Api\Carteira\CarteiraController::class, 'totalPorTipoInvestimento']);
 });
