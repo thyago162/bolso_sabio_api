@@ -42,7 +42,8 @@ Route::middleware(['auth:api'])->group(function () {
 
     ###################################################################################################################
     # CARTEIRA
-
+    Route::get('carteira/total-por-ano', [\App\Http\Controllers\Api\Carteira\CarteiraController::class, 'totalPorAno']);
+    Route::get('carteira/total-por-tipo-investimento', [\App\Http\Controllers\Api\Carteira\CarteiraController::class, 'totalPorTipoInvestimento']);
     Route::apiResource('carteira', \App\Http\Controllers\Api\Carteira\CarteiraController::class);
 
     #####################################################################################################################
@@ -52,6 +53,4 @@ Route::middleware(['auth:api'])->group(function () {
     #################################################################################################################
     # CATEGORIA
     Route::get('categoria/', [\App\Http\Controllers\Api\Categoria\CategoriaController::class, 'getCategoria']);
-    Route::get('carteira/total-por-ano', [\App\Http\Controllers\Api\Carteira\CarteiraController::class, 'totalPorAno']);
-    Route::get('carteira/total-por-tipo-investimento', [\App\Http\Controllers\Api\Carteira\CarteiraController::class, 'totalPorTipoInvestimento']);
 });

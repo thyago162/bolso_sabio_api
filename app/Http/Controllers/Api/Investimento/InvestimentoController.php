@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Investimento;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Investimento\InvestimentoRequest;
 use App\Service\Erro\ErroService;
 use App\Service\Investimento\InvestimentoService;
 use Illuminate\Http\Request;
@@ -36,7 +37,7 @@ class InvestimentoController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(InvestimentoRequest $request)
     {
         try {
             return response()->json(

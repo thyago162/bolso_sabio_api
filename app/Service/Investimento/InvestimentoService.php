@@ -79,7 +79,7 @@ class InvestimentoService
 
     public function salvar($data)
     {
-        return Investimento::create([
+        return Investimento::updateOrCreate([
             'descricao' => $data['descricao'],
             'categoria_id' => $data['categoria_id'],
             'user_id' => auth()->id(),

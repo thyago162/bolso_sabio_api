@@ -24,7 +24,7 @@ class Investimento extends Model
         'valor_bruto',
         'valor_liquido',
         'taxa_negociada',
-        'vencimento'
+        'vencimento',
     ];
 
     ################################################################################################################
