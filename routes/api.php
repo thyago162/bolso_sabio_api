@@ -53,4 +53,9 @@ Route::middleware(['auth:api'])->group(function () {
     #################################################################################################################
     # CATEGORIA
     Route::get('categoria/', [\App\Http\Controllers\Api\Categoria\CategoriaController::class, 'getCategoria']);
+
+    ###################################################################################################################
+    # USER
+    Route::get('user/dados-usuario', [\App\Http\Controllers\Api\User\UserController::class, 'dadosUsuario']);
+    Route::apiResource('user', \App\Http\Controllers\Api\User\UserController::class)->only(['update']);
 });

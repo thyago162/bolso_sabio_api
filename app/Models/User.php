@@ -48,6 +48,14 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    ###################################################################################################
+    # RELATIONSHIPS
+
+    public function endereco()
+    {
+        return $this->hasOne(Endereco::class);
+    }
+
     ####################################################################################################
     # ACESSORS E MUTATORS
 

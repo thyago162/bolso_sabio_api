@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\ResumoNegociacao;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ResumoNegociacao\ResumoNegociacaoRequest;
 use App\Service\Erro\ErroService;
 use App\Service\ResumoNegociacao\ResumoNegociacaoService;
 use Illuminate\Http\Request;
@@ -16,6 +17,7 @@ class ResumoNegociacaoController extends Controller
     {
         $this->resumo_negociacao_service = new ResumoNegociacaoService();
     }
+
     /**
      * Display a listing of the resource.
      */
@@ -35,7 +37,7 @@ class ResumoNegociacaoController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(ResumoNegociacaoRequest $request)
     {
         try {
             return response()->json(

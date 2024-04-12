@@ -9,5 +9,5 @@ class TipoInvestimento extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nome', 'tipo_renda', 'alias'];
+    protected $fillable = ['nome', 'tipo_renda', 'alias', 'cor'];
 }

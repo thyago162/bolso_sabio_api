@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('nome');
             $table->string('tipo_renda');
             $table->string('alias');
+            $table->string('cor');
             $table->timestamps();
         });
     }
