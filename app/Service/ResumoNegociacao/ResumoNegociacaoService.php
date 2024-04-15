@@ -47,7 +47,7 @@ class ResumoNegociacaoService
                 $data[$resumo_negociacao->investimento_id]['anos'][$ano]['total_vendido'] = round($resumo->sum('total_vendido'));
                 $data[$resumo_negociacao->investimento_id]['anos'][$ano]['qnt_cotas_comprada'] = $resumo->sum('qnt_cotas_comprada');
                 $data[$resumo_negociacao->investimento_id]['anos'][$ano]['qnt_cotas_vendida'] = $resumo->sum('qnt_cotas_vendida');
-                $data[$resumo_negociacao->investimento_id]['anos'][$ano]['preco_medio'] = round($resumo->avg('valor_ativo'));
+                $data[$resumo_negociacao->investimento_id]['anos'][$ano]['preco_medio'] = $resumo->avg('valor_ativo');
                 $data[$resumo_negociacao->investimento_id]['anos'][$ano]['ano'] = $ano;
                 $saldo_compras +=  $data[$resumo_negociacao->investimento_id]['anos'][$ano]['total_comprado'];
                 $saldo_vendas +=  $data[$resumo_negociacao->investimento_id]['anos'][$ano]['total_vendido'];
