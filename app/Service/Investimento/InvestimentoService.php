@@ -2,7 +2,10 @@
 
 namespace App\Service\Investimento;
 
+use App\DTO\CadastrarInvestimentoDto;
 use App\Enum\MensagemRetornoEnum;
+use App\Enum\TipoCategoriaEnum;
+use App\Enum\TipoInvestimentoEnum;
 use App\Exceptions\PersonalException;
 use App\Models\Investimento;
 use App\Service\AdministradoraInvestimento\AdministradoraInvestimentoService;
@@ -13,30 +16,31 @@ use App\Service\Csv\CsvService;
 use App\Service\TipoInvestimento\TipoInvestimentoService;
 
 
-class InvestimentoService
+readonly class InvestimentoService
 {
-    private CategoriaService $categoria_service;
-    private TipoInvestimentoService $tipo_investimento_service;
-    private ApiService $api_service;
-    private AdministradoraService $administradora_service;
-    private AdministradoraInvestimentoService $administradora_investimento_service;
-    private CsvService $csv_service;
-
-    public function __construct()
+    public function __construct(
+        private CategoriaService                  $categoria_service,
+        private TipoInvestimentoService           $tipo_investimento_service,
+        private ApiService                        $api_service,
+        private AdministradoraService             $administradora_service,
+        private AdministradoraInvestimentoService $administradora_investimento_service,
+        private CsvService                        $csv_service
+    )
     {
-        $this->categoria_service = new CategoriaService();
-        $this->tipo_investimento_service = new TipoInvestimentoService();
-        $this->administradora_service = new AdministradoraService();
-        $this->administradora_investimento_service = new AdministradoraInvestimentoService();
-        $this->csv_service = new CsvService();
-        $this->api_service = new ApiService();
     }
 
-    public function buscarAtivoPorNome(string $nome_ativo, $tipo_investimento_id = null): array
+    /**
+     * @param string $nome_ativo
+     * @param int|null $tipo_investimento_id
+     *
+     * @return array
+     * @throws PersonalException
+     */
+    public function buscarAtivoPorNome(string $nome_ativo, int $tipo_investimento_id = null): array
     {
         $response = $this->api_service->getAtivos([$nome_ativo]);
         if ($response->status() >= 400) {
-            throw new PersonalException('Ativo não encontrado, verifique o nome e tente novamente', 404);
+            throw new PersonalException(MensagemRetornoEnum::ATIVO_NAO_ENCONTRADO->value, 404);
         }
 
         $payload = $response->json();
@@ -64,10 +68,11 @@ class InvestimentoService
         ];
     }
 
-    public function index()
+    public function index($tipo_investimento_id = null)
     {
-        $investimento = Investimento::with(['categoria', 'tipoInvestimento'])
-            ->tipoInvestimento(request('tipo_investimento_id'))
+        $investimento = Investimento::query()
+            ->with(['categoria', 'tipoInvestimento'])
+            ->tipoInvestimento($tipo_investimento_id)
             ->where('user_id', auth()->id());
 
         if (request('tipo_exibicao') == 'card') {
@@ -77,50 +82,55 @@ class InvestimentoService
         return $investimento->orderBy('tipo_investimento_id')->paginate(request('per_page'));
     }
 
-    public function salvar($data)
+    /**
+     * @param CadastrarInvestimentoDto $dto
+     * @return Investimento
+     */
+    public function salvar(CadastrarInvestimentoDto $dto): Investimento
     {
         return Investimento::updateOrCreate([
-            'descricao' => $data['descricao'],
-            'categoria_id' => $data['categoria_id'],
             'user_id' => auth()->id(),
-            'tipo_investimento_id' => $data['tipo_investimento_id'],
-            'quantidade' => $data['quantidade'],
-            'valor_unitario' => $data['preco'],
-            'valor_aplicado' => $data['valor_aplicado'],
-            'valor_bruto' => $data['valor_bruto'],
-            'valor_liquido' => $data['valor_liquido'],
-            'taxa_negociada' => $data['taxa_negociada'],
-            'vencimento' => $data['vencimento']
-        ]);
+            'descricao' => $dto['descricao'],
+            'tipo_investimento_id' => $dto['tipo_investimento_id'],
+            'categoria_id' => $dto['categoria_id'],
+        ], $dto);
     }
 
     public function importar($request)
     {
         $investimentos = $this->csv_service->montarArray($this->csv_service->csvToArray($request->file('investimentos')));
         foreach ($investimentos as $investimento) {
-            $tipo_investimento = $this->tipo_investimento_service->getPorNome($investimento['tipo_de_investimento']);
-            if ($tipo_investimento->tipo_renda == 'Fixa') {
-                $categoria = $this->categoria_service->store('Título', $tipo_investimento->id);
-                $this->save(
-                    $investimento,
-                    ['tipo_investimento_id' => $tipo_investimento->id, 'categoria_id' => $categoria->id, 'ativo' => []],
-                    $tipo_investimento->id
+            \DB::transaction(function () use ($investimento) {
+                $tipo_investimento = $this->tipo_investimento_service->getPorNome($investimento['tipo_de_investimento']);
+                if ($tipo_investimento->tipo_renda == 'Fixa') {
+                    $categoria = $this->categoria_service->store('Título', $tipo_investimento->id);
+                    if (!$categoria) {
+                        throw new PersonalException(MensagemRetornoEnum::SAVE_CATEGORIA_FAIL->value, 404);
+                    }
+
+                    $data = ['tipo_investimento_id' => $tipo_investimento->id, 'categoria_id' => $categoria->id, 'ativo' => []];
+                } else {
+                    $data = $this->buscarAtivoPorNome(strtolower($investimento['descricao']), $tipo_investimento->id);
+                }
+
+                $investimento = $this->save(
+                    investimento: $investimento,
+                    data: $data,
+                    tipo_investimento_id: $tipo_investimento->id
                 );
-            } else {
-                $data = $this->buscarAtivoPorNome(strtolower($investimento['descricao']), $tipo_investimento->id);
-                $investimento = $this->save($investimento, $data, $tipo_investimento->id);
+
                 if (!$investimento) {
                     throw new PersonalException(MensagemRetornoEnum::ERROR->value, 400);
                 }
 
-                if (isset($data['ativo']['document'])) {
+                if ($tipo_investimento->tipo_renda != 'Fixa' && isset($data['ativo']['document'])) {
                     $administradora = $this->administradora_service->store($data['ativo']);
                     $this->administradora_investimento_service->store($administradora->id, $investimento->id);
                 }
-            }
+            });
         }
 
-        return Investimento::where('user_id', 1)->get();
+        return Investimento::where('user_id', auth()->id())->get();
     }
 
     private function save($investimento, $data, $tipo_investimento_id)
@@ -174,11 +184,13 @@ class InvestimentoService
     public function cadastrarAtivoVendido($nome_ativo)
     {
         $data = $this->buscarAtivoPorNome(strtoupper($nome_ativo));
-        return Investimento::updateOrCreate(['descricao' => $nome_ativo], [
+        return Investimento::updateOrCreate([
             'descricao' => $nome_ativo,
-            'categoria_id' => empty($data['categoria_id']) ? $data['categoria_id'] : 1,
-            'user_id' => 1,
-            'tipo_investimento_id' => empty($data) ? $data['tipo_investimento_id'] : 7,
+            'user_id' => auth()->id(),
+        ], [
+            'descricao' => $nome_ativo,
+            'categoria_id' => !empty($data['categoria_id']) ? $data['categoria_id'] : TipoCategoriaEnum::FUNDOS_INVESTIMENTO->value,
+            'tipo_investimento_id' => !empty($data) ? $data['tipo_investimento_id'] : TipoInvestimentoEnum::ACOES->value,
             'quantidade' => 0,
             'valor_unitario' => isset($data['price']) ? $this->formatarValor($data['price']) : 0,
             'valor_aplicado' => 0,

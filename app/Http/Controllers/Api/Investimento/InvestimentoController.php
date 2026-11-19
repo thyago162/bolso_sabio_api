@@ -8,6 +8,7 @@ use App\Service\Erro\ErroService;
 use App\Service\Investimento\InvestimentoService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use App\DTO\CadastrarInvestimentoDto;
 
 class InvestimentoController extends Controller
 {
@@ -40,9 +41,9 @@ class InvestimentoController extends Controller
     public function store(InvestimentoRequest $request)
     {
         try {
-            return response()->json(
-                $this->investimento_service->salvar($request), 201
-            );
+            $dto = CadastrarInvestimentoDto::fromRequest($request);
+
+            return response()->json($this->investimento_service->salvar($dto), 201);
         } catch (\Exception $exception) {
                 Log::error($exception);
 

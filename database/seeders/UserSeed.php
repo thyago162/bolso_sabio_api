@@ -14,12 +14,12 @@ class UserSeed extends Seeder
     public function run(): void
     {
         User::create([
-            'nome_completo' => 'Administrador',
-            'email' => 'admin@bolsosabio.com',
-            'cpf' => '000000000000',
-            'ddd' => '83',
-            'telefone' => '999310935',
-            'password' => bcrypt('l1nux222')
+            'nome_completo' => env("ADMIN_NOME"),
+            'email' => env("ADMIN_EMAIL"),
+            'cpf' => env("ADMIN_CPF"),
+            'ddd' => env("ADMIN_DDD"),
+            'telefone' => env("ADMIN_TELEFONE"),
+            'password' => bcrypt(env("ADMIN_PWD"))
         ]);
     }
 }
