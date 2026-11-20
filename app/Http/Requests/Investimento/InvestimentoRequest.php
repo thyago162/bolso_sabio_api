@@ -29,6 +29,8 @@ class InvestimentoRequest extends FormRequest
             'valor_liquido' => "required",
             'valor_investido' => "required",
             'taxa_negociada' => "max:255",
+            'categoria_id' => "required",
+            'vencimento' => "required",
         ];
     }
 

@@ -12,11 +12,10 @@ use App\DTO\CadastrarInvestimentoDto;
 
 class InvestimentoController extends Controller
 {
-    private InvestimentoService $investimento_service;
 
-    public function __construct()
+
+    public function __construct(private readonly InvestimentoService $investimento_service)
     {
-        $this->investimento_service = new InvestimentoService();
     }
 
     /**

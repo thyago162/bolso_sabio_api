@@ -3,6 +3,7 @@
 namespace App\DTO;
 
 use App\Http\Requests\Investimento\InvestimentoRequest;
+use Carbon\Carbon;
 
 readonly class CadastrarInvestimentoDto
 {
@@ -30,12 +31,12 @@ readonly class CadastrarInvestimentoDto
             user_id: auth()->id(),
             tipo_investimento_id: $data['tipo_investimento_id'],
             quantidade: $data['quantidade'],
-            valor_unitario: $data['valor_unitario'],
-            valor_aplicado: $data['valor_aplicado'],
-            valor_bruto: $data['valor_bruto'],
-            valor_liquido: $data['valor_liquido'],
-            taxa_negociada: $data['taxa_negociada'],
-            vencimento: $data['vencimento'],
+            valor_unitario: isset($data['valor_unitario']) ? floatval($data['valor_unitario']) : 0,
+            valor_aplicado: floatval($data['valor_investido']),
+            valor_bruto: floatval($data['valor_bruto']),
+            valor_liquido: floatval($data['valor_liquido']),
+            taxa_negociada: floatval($data['taxa_negociada']),
+            vencimento: Carbon::parse($data['vencimento'])->format('Y-m-d'),
         );
     }
 }

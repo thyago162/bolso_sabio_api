@@ -90,10 +90,17 @@ readonly class InvestimentoService
     {
         return Investimento::updateOrCreate([
             'user_id' => auth()->id(),
-            'descricao' => $dto['descricao'],
-            'tipo_investimento_id' => $dto['tipo_investimento_id'],
-            'categoria_id' => $dto['categoria_id'],
-        ], $dto);
+            'descricao' => $dto->descricao,
+            'tipo_investimento_id' => $dto->tipo_investimento_id,
+            'categoria_id' => $dto->categoria_id,
+        ], [
+            'valor_liquido' => $dto->valor_liquido,
+            'valor_bruto' => $dto->valor_bruto,
+            'valor_aplicado' => $dto->valor_aplicado,
+            'taxa_negociada' => $dto->taxa_negociada,
+            'vencimento' => $dto->vencimento,
+            'valor_unitario' => $dto->valor_unitario,
+        ]);
     }
 
     public function importar($request)
@@ -203,6 +210,7 @@ readonly class InvestimentoService
     public function show($id)
     {
         return Investimento::with(['tipoInvestimento', 'categoria', 'administradoraInvestimento.administradora'])
+            ->where('user_id', auth()->id())
             ->findOrFail($id);
     }
 }
